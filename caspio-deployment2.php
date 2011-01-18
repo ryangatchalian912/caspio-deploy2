@@ -5,22 +5,41 @@ Plugin Name: Caspio Deploy2
 Plugin URI: http://www.caspio.com
 Description: Enables ShortCode placeholders for use with the Caspio cloud computing database application service. Can be used for SEO deployment of content, as well as embedding the AJAX widget used to display Caspio forms. Replaces the earlier Caspio Deployment Control plugin (which did not use shortcodes).
 Author: Caspio
-Version: 1.0
+Version: 1.1
 Author URI: http://www.caspio.com
 */
 
-// WordPress customizations
-
 function caspio ($atts = NULL, $content = '') {
 
-if($content && strpos($content,'javascript') ) {
+if($content && strpos($content,'AppKey') ) {
 
-// try to extract variables from javascript snippet
-
-	$regex = "|(http[a-z0-9\/:]+).caspio.com.dp.asp.AppKey.([A-Za-z0-9]+)|"; //.+\?AppKey=([A-Za-z0-0])
+// try to extract variables from javascript snippet or direct deployment link
+	$regex = "|(http[a-z0-9\/:]+).caspio.com.dp.asp.AppKey.([A-Za-z0-9]+)|";
 	preg_match($regex,$content,$matches);
 	$atts["embed"] = $matches[1].'.caspio.com';
 	$atts["key"] = $matches[2];
+}
+elseif($content)
+	{
+	//hack for html entities replacing single quote
+	$content = preg_replace('/&[^;]+;/',"'",$content);
+	// hack to extract parameters from php code snippet
+	$regex = "/'(http[^']+)','([^']+)','([^'])'/";
+	if(preg_match($regex,$content,$matches))
+		{
+		$atts["url"] = $matches[1];
+		$atts["key"] = $matches[2];
+		$atts["style"] = $matches[3];
+		}
+	}
+
+if($atts["seo"] ) {
+	$regex = "|(http[a-z0-9\/:]+).caspio.com.dp.asp.AppKey.([A-Za-z0-9]+)|";
+	if(preg_match($regex,$atts["seo"],$matches) )
+		{
+		$atts["url"] = $matches[1].'.caspio.com/';
+		$atts["key"] = $matches[2];
+		}
 }
 
 if( ($embed = $atts["embed"]) && ($app_key = $atts["key"]) )
@@ -36,31 +55,16 @@ if( ($embed = $atts["embed"]) && ($app_key = $atts["key"]) )
 elseif( ($url = $atts["url"]) && ($app_key = $atts["key"]) )
 	{
 	$dp_cbstyle = ($atts["style"]) ? $atts["style"] : 'l';
-	}
-elseif($content)
-	{
-	//hack for html entities replacing single quote
-	$content = preg_replace('/&[^;]+;/',"'",$content);
-	// hack to extract parameters from php code snippet
-	$regex = "/'(http[^']+)','([^']+)','([^'])'/";
-	preg_match($regex,$content,$matches);
-	$url = $matches[1];
-	$app_key = $matches[2];
-	$dp_cbstyle = $matches[3];
-	}
-
-if($url && $app_key)
-	{
 	ob_start();
 	dpload($url, $app_key, $dp_cbstyle);
-	$output = ob_get_clean();
+	return ob_get_clean();
 	}
-//$output = "<pre> $url $app_key $dp_cbstyle ".htmlentities($content)."</pre>";
 
-return $output;
 }
 
 add_shortcode('caspio','caspio');
+
+// WordPress customization of session start function in PHP library
 
 function caspio_session() {
 if(!$_SESSION)

@@ -5,7 +5,7 @@ Plugin Name: Caspio Deploy2
 Plugin URI: http://www.caspio.com
 Description: Enables ShortCode placeholders for use with the Caspio cloud computing database application service. Can be used for SEO deployment of content, as well as embedding the AJAX widget used to display Caspio forms. Replaces the earlier Caspio Deployment Control plugin (which did not use shortcodes).
 Author: Caspio
-Version: 1.1
+Version: 1.2
 Author URI: http://www.caspio.com
 */
 

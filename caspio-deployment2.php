@@ -5,7 +5,7 @@ Plugin Name: Caspio Deploy2
 Plugin URI: http://www.caspio.com
 Description: Enables ShortCode placeholders for use with the Caspio cloud computing database application service. Can be used for SEO deployment of content, as well as embedding the AJAX widget used to display Caspio forms. Replaces the earlier Caspio Deployment Control plugin (which did not use shortcodes).
 Author: Caspio
-Version: 1.2
+Version: 1.4
 Author URI: http://www.caspio.com
 */
 
@@ -14,10 +14,10 @@ function caspio ($atts = NULL, $content = '') {
 if($content && strpos($content,'AppKey') ) {
 
 // try to extract variables from javascript snippet or direct deployment link
-	$regex = "|(http[a-z0-9\/:]+).caspio.com.dp.asp.AppKey.([A-Za-z0-9]+)|";
+	$regex = "/(http[a-z0-9\/:]+).caspio.(com|net).dp.asp.AppKey.([A-Za-z0-9]+)/";
 	preg_match($regex,$content,$matches);
-	$atts["embed"] = $matches[1].'.caspio.com';
-	$atts["key"] = $matches[2];
+	$atts["embed"] = $matches[1].'.caspio.'.$matches[2];
+	$atts["key"] = $matches[3];
 }
 elseif($content)
 	{
@@ -34,11 +34,11 @@ elseif($content)
 	}
 
 if($atts["seo"] ) {
-	$regex = "|(http[a-z0-9\/:]+).caspio.com.dp.asp.AppKey.([A-Za-z0-9]+)|";
+	$regex = "/(http[a-z0-9\/:]+).caspio.(com|net).dp.asp.AppKey.([A-Za-z0-9]+)/";
 	if(preg_match($regex,$atts["seo"],$matches) )
 		{
-		$atts["url"] = $matches[1].'.caspio.com/';
-		$atts["key"] = $matches[2];
+		$atts["url"] = $matches[1].'.caspio.'.$matches[2].'/';
+		$atts["key"] = $matches[3];
 		}
 }
 
@@ -247,7 +247,7 @@ function PostRequestEx($_url, $_data, $_do_post, $_allowedRedirectsCount) {
 						$_allowedRedirectsCount = $_allowedRedirectsCount - 1;
 						
 						// try request new localtion
-						return PostRequestEx($tmp_url, $tmp_data, $_allowedRedirectsCount); // post request without further redirection
+						return PostRequestEx($tmp_url, $tmp_data, $_do_post, $_allowedRedirectsCount); // post request without further redirection
 					}
 				}
 			}
@@ -336,7 +336,8 @@ function dpload($url, $app_key, $dp_cbstyle)
 				if(strlen($v) > 0) {
 					$valArray = explode("=", $v);
 					if (!isset($uniqueParamNames[strtolower($valArray[0])])) {
-						$params[$valArray[0]] = urldecode($valArray[1]);
+						if (isset($valArray[1]))
+							$params[$valArray[0]] = urldecode($valArray[1]);
 					}
 				}
 			}
@@ -403,8 +404,17 @@ function dpload($url, $app_key, $dp_cbstyle)
     if ($_SERVER["SERVER_PORT"] != "80" && $_SERVER["SERVER_PORT"] != 443 && strlen(strstr($_SERVER["HTTP_HOST"], ":")) == 0) {
 		$port = ":".$_SERVER["SERVER_PORT"];
     }
+    $uriPath = '';
+    if (isset($_SERVER['REQUEST_URI']))
+		$uriPath = $_SERVER['REQUEST_URI'];
+	else
+		$uriPath = $_SERVER["PHP_SELF"];
+    $qst_pos = strpos($uriPath, "?");
+	if ($qst_pos !== false) {
+		$uriPath = substr($uriPath, 0, $qst_pos);
+	}
     $rgx_str = "action\\s*=\\s*\"[^\"]*dp.asp[^\"]*\"";
-    $content = ereg_replace($rgx_str, "action=\"" . $protocol . $_SERVER["HTTP_HOST"] . $port . $_SERVER["PHP_SELF"] . $addPost . "\"", $content);
+    $content = ereg_replace($rgx_str, "action=\"" . $protocol . $_SERVER["HTTP_HOST"] . $port . $uriPath . $addPost . "\"", $content);
 	
 	if($content == '') { // if content is empty - show error
 		$content = $eString;

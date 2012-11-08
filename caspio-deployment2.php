@@ -5,7 +5,7 @@ Plugin Name: Caspio Deploy2
 Plugin URI: http://www.caspio.com
 Description: Enables ShortCode placeholders for use with the Caspio cloud computing database application service. Can be used for SEO deployment of content, as well as embedding the AJAX widget used to display Caspio forms. Replaces the earlier Caspio Deployment Control plugin (which did not use shortcodes).
 Author: Caspio
-Version: 1.4
+Version: 1.5
 Author URI: http://www.caspio.com
 */
 
@@ -47,8 +47,7 @@ if( ($embed = $atts["embed"]) && ($app_key = $atts["key"]) )
 	//check if ssl mode
 	if(strpos($embed,'https:'))
 		$s = 's';
-	return '<div id="cb'.$app_key.'"><a href="http://www.caspio.com" target="_blank">Online Database</a> by Caspio</div>
-<script type="text/javascript" src="'.$embed.'/scripts/e1.js"></script>
+	return '<script type="text/javascript" src="'.$embed.'/scripts/e1.js"></script>
 <script type="text/javascript" language="javascript">try{f_cbload("'.$app_key.'","http'.$s.':");}catch(v_e){;}</script>
 <div id="cxkg"><a href="'.$embed.'/dp.asp?AppKey='.$app_key.'">Click here</a> to load this Caspio <a href="http://www.caspio.com" title="Online Database">Online Database</a>.</div>';
 	}

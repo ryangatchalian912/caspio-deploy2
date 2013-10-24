@@ -2,8 +2,8 @@
 Contributors: Caspio Inc.
 Tags: caspio, bridge, datapage, deployment, seo, php, javascript, ajax, database
 Requires at least: 3.0
-Tested up to: 3.4
-Stable tag: 1.5
+Tested up to: 3.5
+Stable tag: 1.6
 
 Enables Shortcodes for SEO or embedded deployment of Caspio cloud computing database applications.
 
@@ -81,9 +81,13 @@ For support and other information about Caspio Bridge, see the Caspio official s
 
 == Changelog ==
 
+= 1.6 =
+
+Fix an issue with HTTPS
+
 = 1.5 =
 
-White Label.
+White Label
 
 = 1.2, 1.3, 1.4 =
 

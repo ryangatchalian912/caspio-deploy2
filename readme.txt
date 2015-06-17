@@ -3,7 +3,7 @@ Contributors: Caspio Inc.
 Tags: caspio, bridge, datapage, deployment, seo, php, javascript, ajax, database
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 1.7
+Stable tag: 1.8
 
 Enables Shortcodes for SEO or embedded deployment of Caspio cloud computing database applications.
 
@@ -26,6 +26,16 @@ You can then use any of the following Shortcode formats:
 or
 
 `[caspio embed="https://b4.caspio.com" key="5F422000i9f9a0h4e2i7c9g6c9c3"]`
+
+= Embedded Deployment With subdomains support =
+In general, Caspio Deploy2 plugin handles the situations when DataPage is deployed using subdomains and you don't have to do any additional steps.
+But you can force it to use subdomains deployment code by setting "force_subdomains" flag as described below:
+
+`[caspio force_subdomains="true"]http://b4.caspio.com/dp.asp?AppKey=5F422000c3f2d8h4d3c9f4b9g9e0[/caspio]`
+
+or
+
+`[caspio force_subdomains="true" embed="https://b4.caspio.com" key="5F422000i9f9a0h4e2i7c9g6c9c3"]`
 
 = SEO Deployment =
 
@@ -80,6 +90,10 @@ For support and other information about Caspio Bridge, see the Caspio official s
 4. The location of the application key parameter is shown here.
 
 == Changelog ==
+
+= 1.8 =
+
+Added subdomains support for embedded deployment mode  
 
 = 1.7 =
 

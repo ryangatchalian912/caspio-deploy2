@@ -5,7 +5,7 @@
   Plugin URI: http://www.caspio.com
   Description: Enables ShortCode placeholders for use with the Caspio cloud computing database application service. Can be used for SEO deployment of content, as well as embedding the AJAX widget used to display Caspio forms. Replaces the earlier Caspio Deployment Control plugin (which did not use shortcodes).
   Author: Caspio
-  Version: 1.7
+  Version: 1.8
   Author URI: http://www.caspio.com
  */
 
@@ -39,13 +39,26 @@ function caspio ( $atts = NULL, $content = '' ) {
 	}
 
 	if ( ($embed = $atts['embed']) && ($app_key = $atts['key']) ) {
-		//check if ssl mode
-		if ( false !== strpos( $embed, 'https:' ) ) {
-			$s = 's';
+		$caspio_servers_regex = '/https?:\/\/(?:(?:(?:b|au|eu|sa|f|k)\d+)|bridge|bn|bp).caspio.(?:com|net)/i';
+		
+		$subdomain_deployment = ($atts['force_subdomains'] && strtolower($atts['force_subdomains']) == 'true') || preg_match($caspio_servers_regex, $embed) !== 1;		
+		$secure = strpos($embed,'https:'); //check if ssl mode
+		$function_call = '';
+		
+		if($subdomain_deployment)
+		{
+			$domain = preg_replace('/https?:\/\//i', '', $embed);
+			$function_call = 'f_cbload('.($secure ? 'true' : 'false').', "'.esc_attr($domain).'", "'.esc_attr($app_key).'", false);';
 		}
-		return '<script type="text/javascript" src="' . esc_attr( $embed ) . '/scripts/e1.js"></script>'
-				. '<script type="text/javascript" language="javascript">try{f_cbload("' . esc_attr( $app_key ) . '","http' . esc_attr( $s ) . ':");}catch(v_e){;}</script>'
-				. '<div id="cxkg"><a href="' . esc_attr( $embed ) . '/dp.asp?AppKey=' . esc_attr( $app_key ) . '">Click here</a> to load this Caspio <a href="http://www.caspio.com" title="Online Database">Online Database</a>.</div>';
+		else
+		{
+			$function_call = 'f_cbload("'.esc_attr($app_key).'", "'.($secure ? 'https' : 'http').':");';
+		}
+		
+		return '<script type="text/javascript" src="'.esc_attr($embed).'/scripts/'.esc_attr($subdomain_deployment ? 'embed' : 'e1').'.js"></script>'
+				.'<script type="text/javascript" language="javascript">try{'.$function_call.'}catch(v_e){;}</script>'
+				.'<div id="cxkg"><a href="'.esc_attr($embed).'/dp.asp?AppKey='.esc_attr($app_key).'">Click here</a> to load this Caspio <a href="http://www.caspio.com" title="Online Database">Online Database</a>.</div>';
+		
 	} elseif ( ($url = $atts['url']) && ($app_key = $atts['key']) ) {
 		$dp_cbstyle = ($atts['style']) ? $atts['style'] : 'l';
 		ob_start();

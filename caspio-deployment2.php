@@ -42,7 +42,12 @@ function caspio ( $atts = NULL, $content = '' ) {
 		$caspio_servers_regex = '/https?:\/\/(?:(?:(?:b|au|eu|sa|f|k)\d+)|bridge|bn|bp).caspio.(?:com|net)/i';
 		
 		$subdomain_deployment = ($atts['force_subdomains'] && strtolower($atts['force_subdomains']) == 'true') || preg_match($caspio_servers_regex, $embed) !== 1;		
-		$secure = strpos($embed,'https:'); //check if ssl mode
+		//check if ssl mode
+		if ( false !== strpos( $embed, 'https:' ) ) {
+			$secure = 1;
+		} else {
+			$secure = 0;
+		}
 		$function_call = '';
 		
 		if($subdomain_deployment)
